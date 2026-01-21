@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <title id="title">25:00</title>
+</head>
+
+<body>
+  <h1>Tempo Restante: <span id="timer">25:00</span></h1>
+  <button id="btn-start">Start</button>
+
+  <script>
+    // Cria o Web Worker
+    const worker = new Worker('worker.js');
+    const timerEl = document.getElementById('timer');
+    const titleEl = document.getElementById('title');
+    const btnStart = document.getElementById('btn-start');
+
+    // Inicia o timer ao clicar no botão
+    btnStart.addEventListener('click', () => {
+      worker.postMessage('start');
+    });
+
+    // Recebe mensagens do Worker
+    worker.onmessage = (e) => {
+      console.log('Mensagem do Worker:', e.data);
+      if (e.data === 'Fim') {
+        timerEl.textContent = '00:00';
+        titleEl.textContent = '00:00';
+        alert('Tempo esgotado!');
+      } else {
+        const minutes = Math.floor(e.data / 60);
+        const seconds = e.data % 60;
+        timerEl.textContent =
+          `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        titleEl.textContent = timerEl.textContent;
+      }
+    };
+  </script>
+</body>
+
+</html>
